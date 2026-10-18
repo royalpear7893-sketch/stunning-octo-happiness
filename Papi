@@ -1961,7 +1961,7 @@ print("PERFECT ESP READY")
 
 AttachRoot = Create("Frame", {
     Name = "AttachRoot",
-    Size = UDim2.new(1, 0, 0, 820),
+    Size = UDim2.new(1, 0, 0, 620), -- FIXED: Changed from 820 to 620 to remove the gap
     Position = UDim2.new(0, 0, 0, 1150), -- Placed below ESP
     BackgroundTransparency = 1,
     BorderSizePixel = 0,
