@@ -1955,7 +1955,593 @@ end)
 
 print("PERFECT ESP READY")
 
+--========================================================
+-- PART 9: PLAYER ATTACH (NORMAL & INSTANT)
+--========================================================
 
+AttachRoot = Create("Frame", {
+    Name = "AttachRoot",
+    Size = UDim2.new(1, 0, 0, 620), -- FIXED: Changed from 820 to 620 to remove the gap
+    Position = UDim2.new(0, 0, 0, 1150), -- Placed below ESP
+    BackgroundTransparency = 1,
+    BorderSizePixel = 0,
+    LayoutOrder = 3
+}, HomePage)
+
+AttachHeader = Create("Frame", {
+    Name = "AttachHeader",
+    Size = UDim2.new(1, -12, 0, 62),
+    Position = UDim2.new(0, 6, 0, 4),
+    BackgroundColor3 = C.Header,
+    BorderSizePixel = 0
+}, AttachRoot)
+
+Round(AttachHeader, 12)
+Outline(AttachHeader, C.Cyan, 1, 0.2)
+
+Create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 30),
+    Position = UDim2.new(0, 12, 0, 5),
+    BackgroundTransparency = 1,
+    Text = "PLAYER ATTACH",
+    TextColor3 = C.Cyan,
+    Font = Enum.Font.GothamBold,
+    TextSize = 20,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, AttachHeader)
+
+Create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 18),
+    Position = UDim2.new(0, 12, 0, 35),
+    BackgroundTransparency = 1,
+    Text = "LOCK TO TARGET'S BACK",
+    TextColor3 = C.Gray,
+    Font = Enum.Font.Gotham,
+    TextSize = 10,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, AttachHeader)
+
+MakePremiumSelector(AttachRoot, 76, "SELECT TARGET", function(selectedPlayer)
+    AttachTarget = selectedPlayer
+end)
+
+-- ATTACH MODE CARD
+AttachModeCard = Create("Frame", {
+    Size = UDim2.new(1, -12, 0, 90),
+    Position = UDim2.new(0, 6, 0, 326),
+    BackgroundColor3 = C.Card,
+    BackgroundTransparency = 0.06,
+    BorderSizePixel = 0
+}, AttachRoot)
+
+Round(AttachModeCard, 12)
+Outline(AttachModeCard, C.Cyan, 1, 0.5)
+
+Create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 20),
+    Position = UDim2.fromOffset(12, 6),
+    BackgroundTransparency = 1,
+    Text = "ATTACH MODE  (choose one)",
+    TextColor3 = C.Cyan,
+    Font = Enum.Font.GothamBold,
+    TextSize = 11,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, AttachModeCard)
+
+ModeRow = Create("Frame", {
+    Size = UDim2.new(1, -20, 0, 40),
+    Position = UDim2.new(0, 10, 0, 34),
+    BackgroundTransparency = 1
+}, AttachModeCard)
+
+Create("UIListLayout", {
+    FillDirection = Enum.FillDirection.Horizontal,
+    Padding = UDim.new(0, 8),
+    VerticalAlignment = Enum.VerticalAlignment.Center
+}, ModeRow)
+
+AttachMode = "Normal"
+ModeButtons = {}
+
+function MakeModeButton(label, value, index)
+    local btn = Create("TextButton", {
+        Size = UDim2.new(0.5, -4, 1, 0),
+        BackgroundColor3 = C.Background,
+        Text = "",
+        BorderSizePixel = 0,
+        AutoButtonColor = false,
+        LayoutOrder = index
+    }, ModeRow)
+    Round(btn, 8)
+    Outline(btn, C.Cyan, 1, 0.6)
+    
+    Create("TextLabel", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = label,
+        TextColor3 = C.White,
+        Font = Enum.Font.GothamBold,
+        TextSize = 10
+    }, btn)
+    
+    btn.MouseButton1Click:Connect(function()
+        AttachMode = value
+        for _, b in ipairs(ModeButtons) do
+            b.BackgroundColor3 = C.Background
+            local s = b:FindFirstChildOfClass("UIStroke")
+            if s then s.Transparency = 0.6 end
+        end
+        btn.BackgroundColor3 = C.Blue
+        local s = btn:FindFirstChildOfClass("UIStroke")
+        if s then s.Transparency = 0.15 end
+    end)
+    
+    table.insert(ModeButtons, btn)
+    return btn
+end
+
+MakeModeButton("NORMAL", "Normal", 1)
+MakeModeButton("INSTANT", "Instant", 2)
+ModeButtons[1].BackgroundColor3 = C.Blue
+local s1 = ModeButtons[1]:FindFirstChildOfClass("UIStroke")
+if s1 then s1.Transparency = 0.15 end
+
+-- ENABLE ATTACH TOGGLE
+AttachToggleCard = Create("Frame", {
+    Size = UDim2.new(1, -12, 0, 60),
+    Position = UDim2.new(0, 6, 0, 426),
+    BackgroundColor3 = C.Card,
+    BackgroundTransparency = 0.06,
+    BorderSizePixel = 0
+}, AttachRoot)
+
+Round(AttachToggleCard, 12)
+Outline(AttachToggleCard, C.Blue, 1, 0.4)
+
+Create("TextLabel", {
+    Size = UDim2.new(1, -80, 1, 0),
+    Position = UDim2.fromOffset(12, 0),
+    BackgroundTransparency = 1,
+    Text = "ENABLE ATTACH",
+    TextColor3 = C.White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 12,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, AttachToggleCard)
+
+AttachToggleBtn = Create("TextButton", {
+    Size = UDim2.fromOffset(42, 22),
+    Position = UDim2.new(1, -53, 0.5, -11),
+    BackgroundColor3 = C.Background,
+    Text = "",
+    BorderSizePixel = 0,
+    AutoButtonColor = false
+}, AttachToggleCard)
+
+Round(AttachToggleBtn, 12)
+Outline(AttachToggleBtn, C.Cyan, 1, 0.45)
+
+AttachToggleKnob = Create("Frame", {
+    Size = UDim2.fromOffset(16, 16),
+    Position = UDim2.fromOffset(3, 3),
+    BackgroundColor3 = C.White,
+    BorderSizePixel = 0
+}, AttachToggleBtn)
+Round(AttachToggleKnob, 20)
+
+-- DISTANCE SLIDER
+AttachDistanceCard = Create("Frame", {
+    Size = UDim2.new(1, -12, 0, 88),
+    Position = UDim2.new(0, 6, 0, 496),
+    BackgroundColor3 = C.Card,
+    BackgroundTransparency = 0.06,
+    BorderSizePixel = 0
+}, AttachRoot)
+
+Round(AttachDistanceCard, 12)
+Outline(AttachDistanceCard, C.Cyan, 1, 0.5)
+
+Create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 18),
+    Position = UDim2.fromOffset(12, 6),
+    BackgroundTransparency = 1,
+    Text = "DISTANCE BEHIND",
+    TextColor3 = C.Cyan,
+    Font = Enum.Font.GothamBold,
+    TextSize = 11,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, AttachDistanceCard)
+
+AttachDistBadge = Create("Frame", {
+    Size = UDim2.fromOffset(56, 20),
+    Position = UDim2.new(1, -68, 0, 5),
+    BackgroundColor3 = C.Blue2,
+    BorderSizePixel = 0
+}, AttachDistanceCard)
+
+Round(AttachDistBadge, 10)
+Outline(AttachDistBadge, C.Cyan, 1, 0.5)
+
+AttachDistValue = Create("TextLabel", {
+    Size = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
+    Text = "3",
+    TextColor3 = C.White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextXAlignment = Enum.TextXAlignment.Center
+}, AttachDistBadge)
+
+AttachDistTrack = Create("Frame", {
+    Size = UDim2.new(1, -24, 0, 10),
+    Position = UDim2.new(0, 12, 0, 52),
+    BackgroundColor3 = C.Background,
+    BackgroundTransparency = 0.15,
+    BorderSizePixel = 0
+}, AttachDistanceCard)
+
+Round(AttachDistTrack, 5)
+Outline(AttachDistTrack, C.Cyan, 1, 0.55)
+
+AttachDistFill = Create("Frame", {
+    Size = UDim2.new(0, 0, 1, 0),
+    BackgroundColor3 = C.Cyan,
+    BackgroundTransparency = 0.15,
+    BorderSizePixel = 0
+}, AttachDistTrack)
+Round(AttachDistFill, 5)
+MakeGradient(AttachDistFill, C.Cyan, C.Violet, 0)
+
+AttachDistKnobGlow = Create("Frame", {
+    Size = UDim2.fromOffset(26, 26),
+    Position = UDim2.new(0, -13, 0.5, -13),
+    BackgroundColor3 = C.Cyan,
+    BackgroundTransparency = 0.75,
+    BorderSizePixel = 0,
+    ZIndex = 4
+}, AttachDistTrack)
+Round(AttachDistKnobGlow, 13)
+
+AttachDistKnob = Create("Frame", {
+    Size = UDim2.fromOffset(18, 18),
+    Position = UDim2.new(0, -9, 0.5, -9),
+    BackgroundColor3 = C.Blue,
+    BorderSizePixel = 0,
+    ZIndex = 5
+}, AttachDistTrack)
+Round(AttachDistKnob, 9)
+Outline(AttachDistKnob, C.Cyan, 1.5, 0)
+
+ATTACH_DIST_MIN = 1
+ATTACH_DIST_MAX = 10
+AttachDistance = 3
+
+function AttachDistFromPos(x)
+    local tw = AttachDistTrack.AbsoluteSize.X
+    if tw <= 0 then return end
+    local rel = math.clamp(x / tw, 0, 1)
+    local val = math.floor(ATTACH_DIST_MIN + (ATTACH_DIST_MAX - ATTACH_DIST_MIN) * rel + 0.5)
+    AttachDistance = val
+    AttachDistValue.Text = tostring(val)
+    local kp = rel * tw
+    AttachDistKnob.Position = UDim2.new(0, kp - 9, 0.5, -9)
+    AttachDistKnobGlow.Position = UDim2.new(0, kp - 13, 0.5, -13)
+    AttachDistFill.Size = UDim2.new(rel, 0, 1, 0)
+end
+
+AttachDistDragging = false
+AttachDistTrack.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        AttachDistDragging = true
+        AttachDistFromPos(input.Position.X - AttachDistTrack.AbsolutePosition.X)
+        Animate(AttachDistKnobGlow, { BackgroundTransparency = 0.6 }, 0.15)
+    end
+end)
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        AttachDistDragging = false
+        Animate(AttachDistKnobGlow, { BackgroundTransparency = 0.75 }, 0.2)
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if AttachDistDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        AttachDistFromPos(input.Position.X - AttachDistTrack.AbsolutePosition.X)
+    end
+end)
+task.defer(function()
+    task.wait(0.2)
+    AttachDistFromPos(AttachDistTrack.AbsoluteSize.X * 0.22)
+end)
+
+-- HEIGHT SLIDER
+AttachHeightCard = Create("Frame", {
+    Size = UDim2.new(1, -12, 0, 88),
+    Position = UDim2.new(0, 6, 0, 594),
+    BackgroundColor3 = C.Card,
+    BackgroundTransparency = 0.06,
+    BorderSizePixel = 0
+}, AttachRoot)
+
+Round(AttachHeightCard, 12)
+Outline(AttachHeightCard, C.Cyan, 1, 0.5)
+
+Create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 18),
+    Position = UDim2.fromOffset(12, 6),
+    BackgroundTransparency = 1,
+    Text = "HEIGHT OFFSET",
+    TextColor3 = C.Cyan,
+    Font = Enum.Font.GothamBold,
+    TextSize = 11,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, AttachHeightCard)
+
+AttachHeightBadge = Create("Frame", {
+    Size = UDim2.fromOffset(56, 20),
+    Position = UDim2.new(1, -68, 0, 5),
+    BackgroundColor3 = C.Blue2,
+    BorderSizePixel = 0
+}, AttachHeightCard)
+
+Round(AttachHeightBadge, 10)
+Outline(AttachHeightBadge, C.Cyan, 1, 0.5)
+
+AttachHeightValue = Create("TextLabel", {
+    Size = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
+    Text = "2",
+    TextColor3 = C.White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextXAlignment = Enum.TextXAlignment.Center
+}, AttachHeightBadge)
+
+AttachHeightTrack = Create("Frame", {
+    Size = UDim2.new(1, -24, 0, 10),
+    Position = UDim2.new(0, 12, 0, 52),
+    BackgroundColor3 = C.Background,
+    BackgroundTransparency = 0.15,
+    BorderSizePixel = 0
+}, AttachHeightCard)
+
+Round(AttachHeightTrack, 5)
+Outline(AttachHeightTrack, C.Cyan, 1, 0.55)
+
+AttachHeightFill = Create("Frame", {
+    Size = UDim2.new(0, 0, 1, 0),
+    BackgroundColor3 = C.Cyan,
+    BackgroundTransparency = 0.15,
+    BorderSizePixel = 0
+}, AttachHeightTrack)
+Round(AttachHeightFill, 5)
+MakeGradient(AttachHeightFill, C.Cyan, C.Violet, 0)
+
+AttachHeightKnobGlow = Create("Frame", {
+    Size = UDim2.fromOffset(26, 26),
+    Position = UDim2.new(0, -13, 0.5, -13),
+    BackgroundColor3 = C.Cyan,
+    BackgroundTransparency = 0.75,
+    BorderSizePixel = 0,
+    ZIndex = 4
+}, AttachHeightTrack)
+Round(AttachHeightKnobGlow, 13)
+
+AttachHeightKnob = Create("Frame", {
+    Size = UDim2.fromOffset(18, 18),
+    Position = UDim2.new(0, -9, 0.5, -9),
+    BackgroundColor3 = C.Blue,
+    BorderSizePixel = 0,
+    ZIndex = 5
+}, AttachHeightTrack)
+Round(AttachHeightKnob, 9)
+Outline(AttachHeightKnob, C.Cyan, 1.5, 0)
+
+ATTACH_HGT_MIN = 0
+ATTACH_HGT_MAX = 8
+AttachHeight = 2
+
+function AttachHgtFromPos(x)
+    local tw = AttachHeightTrack.AbsoluteSize.X
+    if tw <= 0 then return end
+    local rel = math.clamp(x / tw, 0, 1)
+    local val = math.floor(ATTACH_HGT_MIN + (ATTACH_HGT_MAX - ATTACH_HGT_MIN) * rel + 0.5)
+    AttachHeight = val
+    AttachHeightValue.Text = tostring(val)
+    local kp = rel * tw
+    AttachHeightKnob.Position = UDim2.new(0, kp - 9, 0.5, -9)
+    AttachHeightKnobGlow.Position = UDim2.new(0, kp - 13, 0.5, -13)
+    AttachHeightFill.Size = UDim2.new(rel, 0, 1, 0)
+end
+
+AttachHgtDragging = false
+AttachHeightTrack.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        AttachHgtDragging = true
+        AttachHgtFromPos(input.Position.X - AttachHeightTrack.AbsolutePosition.X)
+        Animate(AttachHeightKnobGlow, { BackgroundTransparency = 0.6 }, 0.15)
+    end
+end)
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        AttachHgtDragging = false
+        Animate(AttachHeightKnobGlow, { BackgroundTransparency = 0.75 }, 0.2)
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if AttachHgtDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        AttachHgtFromPos(input.Position.X - AttachHeightTrack.AbsolutePosition.X)
+    end
+end)
+task.defer(function()
+    task.wait(0.2)
+    AttachHgtFromPos(AttachHeightTrack.AbsoluteSize.X * 0.25)
+end)
+
+-- STATUS LABEL
+AttachStatus = Create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 24),
+    Position = UDim2.new(0, 10, 0, 692),
+    BackgroundTransparency = 1,
+    Text = "● ATTACH OFF",
+    TextColor3 = C.Gray,
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, AttachRoot)
+
+-- BACKEND
+AttachAlignPos = nil
+AttachAlignOri = nil
+AttachAttachment = nil
+AttachActive = false
+
+function SetNoclip(state)
+    local char = Player.Character
+    if not char then return end
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = not state
+        end
+    end
+end
+
+function DestroyAttachConstraints()
+    if AttachAlignPos then pcall(function() AttachAlignPos:Destroy() end) AttachAlignPos = nil end
+    if AttachAlignOri then pcall(function() AttachAlignOri:Destroy() end) AttachAlignOri = nil end
+    if AttachAttachment then pcall(function() AttachAttachment:Destroy() end) AttachAttachment = nil end
+end
+
+function RebuildAttachConstraints()
+    DestroyAttachConstraints()
+    if not AttachActive then return end
+
+    local myChar = Player.Character
+    local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+    if not myRoot then return end
+
+    AttachAttachment = Instance.new("Attachment")
+    AttachAttachment.Name = "PERFECT_ATTACH_ATT"
+    AttachAttachment.Parent = myRoot
+
+    AttachAlignPos = Instance.new("AlignPosition")
+    AttachAlignPos.Name = "PERFECT_ATTACH_POS"
+    AttachAlignPos.Attachment0 = AttachAttachment
+    AttachAlignPos.Mode = Enum.PositionAlignmentMode.OneAttachment
+    AttachAlignPos.Responsiveness = 100
+    AttachAlignPos.MaxForce = 100000
+    AttachAlignPos.ApplyAtCenterOfMass = true
+    AttachAlignPos.Position = myRoot.Position
+    AttachAlignPos.Parent = myRoot
+
+    AttachAlignOri = Instance.new("AlignOrientation")
+    AttachAlignOri.Name = "PERFECT_ATTACH_ORI"
+    AttachAlignOri.Attachment0 = AttachAttachment
+    AttachAlignOri.Mode = Enum.OrientationAlignmentMode.OneAttachment
+    AttachAlignOri.Responsiveness = 100
+    AttachAlignOri.MaxTorque = 100000
+    AttachAlignOri.CFrame = myRoot.CFrame
+    AttachAlignOri.Parent = myRoot
+end
+
+RunService.RenderStepped:Connect(function()
+    if not AttachActive then return end
+    
+    if not AttachTarget then
+        AttachStatus.Text = "● NO TARGET SELECTED"
+        AttachStatus.TextColor3 = C.Cyan
+        DestroyAttachConstraints()
+        return
+    end
+
+    local targetChar = AttachTarget.Character
+    local targetRoot = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+    local targetHum = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
+
+    if not targetChar then
+        AttachStatus.Text = "● TARGET LEFT"
+        AttachStatus.TextColor3 = C.Red
+        DestroyAttachConstraints()
+        return
+    end
+
+    if not targetHum or targetHum.Health <= 0 then
+        AttachStatus.Text = "● TARGET DEAD"
+        AttachStatus.TextColor3 = C.Red
+        DestroyAttachConstraints()
+        return
+    end
+
+    if not targetRoot then
+        AttachStatus.Text = "● TARGET INVALID"
+        AttachStatus.TextColor3 = C.Red
+        return
+    end
+
+    local targetCFrame = targetRoot.CFrame
+    local behindPos = targetCFrame.Position - (targetCFrame.LookVector * AttachDistance) + Vector3.new(0, AttachHeight, 0)
+    local faceCFrame = CFrame.lookAt(behindPos, targetRoot.Position)
+
+    if AttachMode == "Normal" then
+        -- NORMAL MODE
+        if not AttachAlignPos or not AttachAlignPos.Parent then
+            RebuildAttachConstraints()
+        end
+        if AttachAlignPos then AttachAlignPos.Position = behindPos end
+        if AttachAlignOri then AttachAlignOri.CFrame = faceCFrame end
+    else
+        -- INSTANT MODE (Hard TP + Camera Fix)
+        if not AttachAlignPos then
+            local myChar = Player.Character
+            local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+            local myHead = myChar and myChar:FindFirstChild("Head")
+            
+            if myRoot then
+                myRoot.CFrame = faceCFrame
+                myRoot.Velocity = Vector3.zero
+                
+                if myHead then
+                    Camera.CFrame = CFrame.lookAt(
+                        Camera.CFrame.Position, 
+                        myHead.Position + myHead.CFrame.LookVector * 10
+                    )
+                end
+            end
+        else
+            DestroyAttachConstraints()
+        end
+    end
+
+    AttachStatus.Text = "● ATTACHED: " .. AttachTarget.Name
+    AttachStatus.TextColor3 = C.Green
+end)
+
+AttachToggleBtn.MouseButton1Click:Connect(function()
+    AttachActive = not AttachActive
+    Animate(AttachToggleBtn, { BackgroundColor3 = AttachActive and C.Blue or C.Background })
+    Animate(AttachToggleKnob, { Position = AttachActive and UDim2.new(1, -19, 0.5, -8) or UDim2.fromOffset(3, 3) })
+
+    if AttachActive then
+        RebuildAttachConstraints()
+        SetNoclip(true)
+        AttachStatus.Text = AttachTarget and ("● ATTACHING: " .. AttachTarget.Name) or "● NO TARGET SELECTED"
+        AttachStatus.TextColor3 = AttachTarget and C.Green or C.Cyan
+    else
+        DestroyAttachConstraints()
+        SetNoclip(false)
+        AttachStatus.Text = "● ATTACH OFF"
+        AttachStatus.TextColor3 = C.Gray
+    end
+end)
+
+Player.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    if AttachActive then
+        RebuildAttachConstraints()
+        SetNoclip(true)
+    end
+end)
+
+print("PERFECT PLAYER ATTACH READY")
 
 --========================================================
 -- PART 10: HITBOX EXPANDER
